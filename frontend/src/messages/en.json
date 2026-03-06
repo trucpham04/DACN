@@ -1,0 +1,23 @@
+{
+  "HomePage": {
+    "title": "Hello World!",
+    "description": "This is a simple Next.js template with built-in theme and locale features."
+  },
+
+  "NotFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for could not be found.",
+    "backHome": "Back to homepage"
+  },
+
+  "ThemeToggle": {
+    "toggleTheme": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+
+  "LocaleSelector": {
+    "changeLocale": "Change locale"
+  }
+}

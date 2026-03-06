@@ -1,0 +1,22 @@
+{
+  "HomePage": {
+    "title": "Hello World!",
+    "description": "Đây là một template Next.js đơn giản với các tính năng theme và locale được xây dựng sẵn."
+  },
+  "NotFound": {
+    "title": "Không tìm thấy trang",
+    "description": "Trang bạn tìm không tồn tại hoặc đã bị xoá.",
+    "backHome": "Về trang chủ"
+  },
+
+  "ThemeToggle": {
+    "toggleTheme": "Chuyển đổi giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
+  },
+
+  "LocaleSelector": {
+    "changeLocale": "Đổi ngôn ngữ"
+  }
+}
