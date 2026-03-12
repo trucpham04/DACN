@@ -13,8 +13,209 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+enum RoleEnum {
+  ADMIN
+  LECTURER
+  STUDENT
+}
+
+// 1. ACCOUNT & PROFILE
+model Account {
+  AccountID Int        @id @default(autoincrement())
+  Role      RoleEnum
+  Username  String     @unique @db.VarChar(255)
+  Password  String     @db.VarChar(255)
+  profile   UserProfile?
+}
+
+model UserProfile {
+  ProfileID   Int     @id @default(autoincrement())
+  AccountID   Int     @unique
+  FullName    String? @db.VarChar(255)
+  PhoneNumber String? @db.VarChar(255)
+  DateOfBirth DateTime? @db.Date
+  Gender      String? @db.VarChar(255)
+  Email       String? @db.VarChar(255)
+  Avatar      String? @db.VarChar(255)
+  CitizenID   String? @db.VarChar(255)
+  Hometown    String? @db.VarChar(255)
+  Status      String? @db.VarChar(255)
+
+  account               Account               @relation(fields: [AccountID], references: [AccountID])
+  lecturerSections      Section[]             @relation("LecturerSections")
+  registrations         Registration[]
+  attendanceDetails     AttendanceDetail[]
+  submittedApplications ProfileApplication[]  @relation("StudentApplications")
+  reviewedApplications  ProfileApplication[]  @relation("ReviewerApplications")
+  studentCertificates   StudentCertificates[]
+}
+
+// 3. TRAINING MANAGEMENT
+model Subject {
+  SubjectID             Int       @id @default(autoincrement())
+  PrerequisiteSubjectID Int?
+  SubjectName           String    @db.VarChar(255)
+  Periods               Int
+  sections              Section[]
+}
+
+model Section {
+  SectionID         Int       @id @default(autoincrement())
+  LecturerProfileID Int
+  SubjectID         Int
+  Year              String    @db.VarChar(255)
+  EnrollmentCount   Int       @default(0)
+  MaxCapacity       Int
+  status            Int       @default(0)
+  visibility        Int       @default(1)
+
+  lecturer          UserProfile          @relation("LecturerSections", fields: [LecturerProfileID], references: [ProfileID])
+  subject           Subject              @relation(fields: [SubjectID], references: [SubjectID])
+  registrations     Registration[]
+  schedules         Schedule[]
+  attendances       Attendance[]
+  sectionUsageHistories SectionUsageHistory[]
+  usageSections     Usage_Section[]
+}
+
+model Registration {
+  SectionID        Int
+  StudentProfileID Int
+
+  section          Section     @relation(fields: [SectionID], references: [SectionID])
+  student          UserProfile @relation(fields: [StudentProfileID], references: [ProfileID])
+
+  @@id([SectionID, StudentProfileID])
+}
+
+// 4. FACILITIES
+model Room {
+  RoomID    Int     @id @default(autoincrement())
+  RoomName  String  @db.VarChar(255)
+  RoomType  String? @db.VarChar(255)
+  Campus    String? @db.VarChar(255)
+  Capacity  Int?
+  Status    String? @db.VarChar(255)
+
+  schedules      Schedule[]
+  usageHistories UsageHistory[]
+}
+
+model Schedule {
+  ScheduleID   Int      @id @default(autoincrement())
+  RoomID       Int
+  SectionID    Int
+  DayOfWeek    String   @db.VarChar(255)
+  StartPeriod  Int
+  EndPeriod    Int
+  TotalPeriods Int
+  StartDate    DateTime @db.Date
+  EndDate      DateTime @db.Date
+
+  room    Room    @relation(fields: [RoomID], references: [RoomID])
+  section Section @relation(fields: [SectionID], references: [SectionID])
+}
+
+model UsageHistory {
+  UsageHistoryID Int      @id @default(autoincrement())
+  RoomID         Int
+  StartTime      DateTime @db.Date
+  EndTime        DateTime @db.Date
+  Note           String?  @db.VarChar(255)
+
+  room                  Room                  @relation(fields: [RoomID], references: [RoomID])
+  sectionUsageHistories SectionUsageHistory[]
+  usageSections         Usage_Section[]
+}
+
+model SectionUsageHistory {
+  UsageHistoryID Int
+  SectionID      Int
+
+  usageHistory UsageHistory @relation(fields: [UsageHistoryID], references: [UsageHistoryID])
+  section      Section      @relation(fields: [SectionID], references: [SectionID])
+
+  @@id([UsageHistoryID, SectionID])
+}
+
+model Usage_Section {
+  UsageHistoryID Int
+  SectionID      Int
+
+  usageHistory UsageHistory @relation(fields: [UsageHistoryID], references: [UsageHistoryID])
+  section      Section      @relation(fields: [SectionID], references: [SectionID])
+
+  @@id([UsageHistoryID, SectionID])
+}
+
+// 5. ATTENDANCE
+model Attendance {
+  AttendanceID   Int      @id @default(autoincrement())
+  SectionID      Int
+  AttendanceDate DateTime @db.Date
+  Slot           Int
+  Note           String?
+  CreatedAt      DateTime @default(now())
+
+  section            Section            @relation(fields: [SectionID], references: [SectionID])
+  attendanceDetails  AttendanceDetail[]
+}
+
+model AttendanceDetail {
+  AttendanceDetailID Int     @id @default(autoincrement())
+  AttendanceID       Int
+  StudentProfileID   Int
+  Status             String? @db.VarChar(255)
+  Note               String?
+
+  attendance Attendance  @relation(fields: [AttendanceID], references: [AttendanceID])
+  student    UserProfile @relation(fields: [StudentProfileID], references: [ProfileID])
+}
+
+// 6. PROFILE & CERTIFICATES
+model ProfileApplication {
+  ApplicationID        Int       @id @default(autoincrement())
+  StudentProfileID     Int
+  ApplicationStatus    String?   @db.VarChar(255)
+  SubmissionDate       DateTime?
+  ReviewedByProfileID  Int?
+  ReviewDate           DateTime?
+  ReviewNotes          String?
+
+  student            UserProfile        @relation("StudentApplications", fields: [StudentProfileID], references: [ProfileID])
+  reviewer           UserProfile?       @relation("ReviewerApplications", fields: [ReviewedByProfileID], references: [ProfileID])
+  certificateDetails CertificateDetail[]
+}
+
+model CertificateType {
+  CertificateTypeID Int    @id @default(autoincrement())
+  TypeName          String @db.VarChar(255)
+  Description       String?
+
+  certificateDetails CertificateDetail[]
+}
+
+model CertificateDetail {
+  CertificateID     Int      @id @default(autoincrement())
+  ApplicationID     Int
+  CertificateTypeID Int
+  Score             Float?
+  IssueDate         DateTime? @db.Date
+  ExpiryDate        DateTime? @db.Date
+  EvidenceURL       String?   @db.VarChar(255)
+  Metadata          Json?
+
+  application         ProfileApplication    @relation(fields: [ApplicationID], references: [ApplicationID])
+  certificateType     CertificateType       @relation(fields: [CertificateTypeID], references: [CertificateTypeID])
+  studentCertificates StudentCertificates[]
+}
+
+model StudentCertificates {
+  StudentID     Int
+  CertificateID Int
+
+  student     UserProfile       @relation(fields: [StudentID], references: [ProfileID])
+  certificate CertificateDetail @relation(fields: [CertificateID], references: [CertificateID])
+
+  @@id([StudentID, CertificateID])
 }
