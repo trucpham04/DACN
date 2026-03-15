@@ -3,16 +3,10 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from "axios";
-import type { ApiError, ApiResponse } from "@/types/api";
+import type { ApiError, ApiMeta, ApiResponse, PaginatedData } from "@/types/api";
 
-/**
- * Base API URL - configure based on environment
- */
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
-/**
- * Axios instance with interceptors for API calls
- */
 export const apiClient = axios.create({
   baseURL: BASE_URL,
   timeout: 30000,
@@ -26,7 +20,6 @@ export const apiClient = axios.create({
  */
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Get token from storage (implement based on your auth strategy)
     const token =
       typeof window !== "undefined"
         ? localStorage.getItem("accessToken")
@@ -44,46 +37,47 @@ apiClient.interceptors.request.use(
 );
 
 /**
- * Response interceptor - unwrap ApiResponse, handle errors
+ * Response interceptor - unwrap ApiResponse, expose meta, map errors
+ *
+ * On success:  response.data  = T (unwrapped)
+ *              response.meta  = ApiMeta | undefined
+ * On failure:  rejects with ApiError (message, errorCode, statusCode)
  */
 apiClient.interceptors.response.use(
   (response: AxiosResponse<ApiResponse<unknown>>) => {
-    // Unwrap the ApiResponse and return just the data
-    const apiResponse = response.data;
+    const body = response.data;
 
-    if (apiResponse.success) {
+    if (body.success) {
       return {
         ...response,
-        data: apiResponse.data,
+        data: body.data,
+        meta: body.meta,
       };
     }
 
-    // If success is false, treat as error
+    // Backend returned success: false with an error payload
     const error: ApiError = {
-      message: apiResponse.message || "An error occurred",
-      errorCode: apiResponse.errorCode,
+      message: body.error?.message ?? "An error occurred",
+      errorCode: body.error?.code,
       statusCode: response.status,
     };
 
     return Promise.reject(error);
   },
   (error: AxiosError<ApiResponse<unknown>>) => {
+    const body = error.response?.data;
+
+    // Attempt to read the nested error object from backend contract
+    const backendError = body && typeof body === "object" ? body.error : null;
+
     const apiError: ApiError = {
-      message:
-        error.response?.data?.message ||
-        error.message ||
-        "Network error occurred",
-      errorCode: error.response?.data?.errorCode || "NETWORK_ERROR",
-      statusCode: error.response?.status || 500,
+      message: backendError?.message ?? error.message ?? "Network error occurred",
+      errorCode: backendError?.code ?? "NETWORK_ERROR",
+      statusCode: error.response?.status ?? 500,
     };
 
-    // Handle specific status codes
-    if (apiError.statusCode === 401) {
-      // Unauthorized - clear token and redirect to login
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("accessToken");
-        // You can dispatch a logout action or redirect here
-      }
+    if (apiError.statusCode === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("accessToken");
     }
 
     return Promise.reject(apiError);
@@ -91,11 +85,27 @@ apiClient.interceptors.response.use(
 );
 
 /**
- * Generic fetcher function for SWR
+ * Generic fetcher for SWR / simple GET calls.
+ * Returns the unwrapped data (T), not the full ApiResponse.
  */
 export const fetcher = async <T>(url: string): Promise<T> => {
   const response = await apiClient.get<T>(url);
-  return response.data;
+  return response.data as T;
+};
+
+/**
+ * Helper for paginated GET calls.
+ * Returns { items: T[], meta: ApiMeta }.
+ */
+export const paginatedFetcher = async <T>(
+  url: string,
+): Promise<PaginatedData<T>> => {
+  const response = await apiClient.get<T[]>(url);
+  const axiosResponse = response as AxiosResponse<T[]> & { meta?: ApiMeta };
+  return {
+    items: response.data as T[],
+    meta: axiosResponse.meta ?? { page: 1, limit: 10, total: 0 },
+  };
 };
 
 export default apiClient;

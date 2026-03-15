@@ -1,15 +1,38 @@
 /**
- * Common API Response structure from backend
+ * Error payload returned by backend when success = false
  */
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-  errorCode?: string;
+export interface ApiErrorPayload {
+  code: string;
+  message: string;
 }
 
 /**
- * API Error structure for error handling
+ * Pagination meta returned by backend for list endpoints
+ */
+export interface ApiMeta {
+  page: number;
+  limit: number;
+  total: number;
+}
+
+/**
+ * Raw API Response structure from backend
+ * {
+ *   "success": boolean,
+ *   "data": object | array | null,
+ *   "error": { "code": string, "message": string } | null,
+ *   "meta": { "page": number, "limit": number, "total": number }
+ * }
+ */
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T | null;
+  error?: ApiErrorPayload | null;
+  meta?: ApiMeta;
+}
+
+/**
+ * Normalized error used throughout the frontend after interceptor mapping
  */
 export interface ApiError {
   message: string;
@@ -18,12 +41,9 @@ export interface ApiError {
 }
 
 /**
- * Paginated response structure
+ * Paginated list response after unwrapping
  */
-export interface PaginatedResponse<T> {
+export interface PaginatedData<T> {
   items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  meta: ApiMeta;
 }

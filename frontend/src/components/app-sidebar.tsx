@@ -1,20 +1,5 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Book,
-  BookOpen,
-  Building,
-  Calendar,
-  Check,
-  ClipboardList,
-  FileText,
-  GraduationCap,
-  Key,
-  NotebookPen,
-  Shield,
-  Users,
-} from "lucide-react";
 import Link from "next/link";
 import {
   Sidebar,
@@ -27,44 +12,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { navGroups } from "@/config/navigation";
 import { usePathname } from "@/i18n/navigation";
-
-type NavItem = {
-  href: string;
-  label: string;
-  icon: React.ElementType;
-};
+import type { NavItem } from "@/types/navigation";
+import { filterNavGroups } from "@/types/navigation";
 
 export function AppSidebar() {
   const pathname = usePathname() || "";
 
-  const accountAndApplicationItems: NavItem[] = [
-    { href: `/lecturers`, label: "Giảng viên", icon: GraduationCap },
-    { href: `/students`, label: "Sinh viên", icon: Users },
-    { href: `/accounts`, label: "Tài khoản", icon: Key },
-    { href: `/roles`, label: "Phân quyền", icon: Shield },
-  ];
-
-  const sectionItems: NavItem[] = [
-    { href: `/subjects`, label: "Môn học", icon: Book },
-    { href: `/sections`, label: "Học phần", icon: BookOpen },
-    { href: `/registrations`, label: "Đăng ký học phần", icon: NotebookPen },
-  ];
-
-  const admissionItems: NavItem[] = [
-    { href: `/approvals`, label: "Xét duyệt hồ sơ", icon: Check },
-    { href: `/applications`, label: "Hồ sơ đăng ký", icon: FileText },
-    { href: `/certificates`, label: "Chứng chỉ", icon: BadgeCheck },
-  ];
-
-  const facilityItems: NavItem[] = [
-    { href: `/rooms`, label: "Phòng học", icon: Building },
-  ];
-
-  const attendanceAndScheduleItems: NavItem[] = [
-    { href: `/attendance`, label: "Điểm danh", icon: ClipboardList },
-    { href: `/schedules`, label: "Lịch học", icon: Calendar },
-  ];
+  // Pass a role here when auth context is available, e.g. filterNavGroups(navGroups, role)
+  // Currently null means all items are shown (no role-gating).
+  const visibleGroups = filterNavGroups(navGroups, null);
 
   const renderItem = (item: NavItem) => {
     const isActive =
@@ -101,44 +59,14 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Hồ sơ & Tài khoản</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {accountAndApplicationItems.map(renderItem)}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Học phần</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{sectionItems.map(renderItem)}</SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Tuyển sinh </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{admissionItems.map(renderItem)}</SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Cơ sở vật chất</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{facilityItems.map(renderItem)}</SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Điểm danh & Lịch học</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {attendanceAndScheduleItems.map(renderItem)}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {visibleGroups.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>{group.items.map(renderItem)}</SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
     </Sidebar>
   );
