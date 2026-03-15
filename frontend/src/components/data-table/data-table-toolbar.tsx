@@ -1,8 +1,8 @@
 "use client";
 
 import type { Table } from "@tanstack/react-table";
+import { ArrowDown, ChevronDown, SearchIcon, Settings2 } from "lucide-react";
 import * as React from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +13,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { ButtonGroup } from "../ui/button-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../ui/input-group";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -60,23 +66,29 @@ export function DataTableToolbar<TData>({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-1 items-center gap-2">
-          {onSearchChange && (
-            <Input
+      <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center gap-2">
+          <InputGroup>
+            {/* {onSearchChange && ( */}
+            <InputGroupInput
               placeholder={searchPlaceholder}
               value={localSearch}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="max-w-xs"
             />
-          )}
+            <InputGroupAddon>
+              <SearchIcon />
+            </InputGroupAddon>
+          </InputGroup>
+          {/* )} */}
         </div>
 
         {enableColumnVisibility && hidableColumns.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                Cột hiển thị
+              <Button variant="ghost" size="sm">
+                <Settings2 className="size-4" />
+                Ẩn cột
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44">
@@ -96,16 +108,44 @@ export function DataTableToolbar<TData>({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+
+        <ButtonGroup>
+          <Button variant="outline" size="sm">
+            Thêm mới
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <ChevronDown className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+              <DropdownMenuLabel>Hiện / ẩn cột</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {hidableColumns.map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(value)}
+                >
+                  {typeof column.columnDef.header === "string"
+                    ? column.columnDef.header
+                    : column.id}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </ButtonGroup>
       </div>
 
-      {bulkActionsContent && selectedCount > 0 && (
+      {/* {bulkActionsContent && selectedCount > 0 && (
         <div className="flex items-center gap-2 rounded-md border border-dashed px-3 py-2">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-muted-foreground text-sm">
             {selectedCount} dòng đã chọn
           </span>
           <div className="flex items-center gap-2">{bulkActionsContent}</div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

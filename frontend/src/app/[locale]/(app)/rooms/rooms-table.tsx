@@ -1,8 +1,19 @@
 "use client";
 
+import { PencilIcon, TrashIcon } from "lucide-react";
 import * as React from "react";
-
 import { DataTable } from "@/components/data-table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useDeleteRoom } from "@/hooks/use-rooms";
 import type { Room } from "@/types/room";
@@ -11,7 +22,7 @@ import { roomColumns } from "./columns";
 // ---------------------------------------------------------------------------
 // Mock data — chỉ dùng để test hiển thị, xóa khi kết nối API thật
 // ---------------------------------------------------------------------------
-const MOCK_ROOMS: Room[] = Array.from({ length: 35 }, (_, i) => ({
+const MOCK_ROOMS: Room[] = Array.from({ length: 100 }, (_, i) => ({
   roomId: i + 1,
   roomName: `P.${100 + i + 1}`,
   roomType: ["Lý thuyết", "Thực hành", "Hội trường"][i % 3],
@@ -59,6 +70,7 @@ export function RoomsTable() {
       enableRowSelection
       enableColumnVisibility
       emptyMessage="Chưa có phòng học nào."
+      actionColumnWidth={64}
       renderRowActions={(row) => <RoomRowActions room={row.original} />}
       renderBulkActions={(selectedRows) => (
         <BulkDeleteButton
@@ -73,19 +85,65 @@ function RoomRowActions({ room }: { room: Room }) {
   const { mutate: mutateDeleteRoom, isLoading } = useDeleteRoom(room.roomId);
 
   return (
-    <div className="flex items-center gap-1">
-      <Button variant="ghost" size="sm">
+    <div className="flex w-full items-center justify-center gap-2">
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" disabled={isLoading}>
+            <TrashIcon className="size-4" />
+            Xóa
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa phòng</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc muốn xóa phòng{" "}
+              <span className="text-foreground font-medium">
+                {room.roomName ?? `#${room.roomId}`}
+              </span>
+              ? Hành động này không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isLoading}>Hủy</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isLoading}
+              onClick={() => mutateDeleteRoom()}
+            >
+              Xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Button variant="ghost" aria-label="Hành động">
+        <PencilIcon className="size-4" />
         Sửa
       </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        disabled={isLoading}
-        onClick={() => mutateDeleteRoom()}
-      >
-        Xóa
-      </Button>
     </div>
+    // <DropdownMenu>
+    //   <DropdownMenuTrigger asChild>
+    //     <Button variant="ghost" size="icon-sm" aria-label="Hành động">
+    //       <EllipsisIcon className="size-4" />
+    //     </Button>
+    //   </DropdownMenuTrigger>
+    //   <DropdownMenuContent align="end" className="w-24">
+    //     <DropdownMenuItem onSelect={() => {}}>
+    //       <PencilIcon className="size-4" />
+    //       Sửa
+    //     </DropdownMenuItem>
+    //     {/* <DropdownMenuSeparator /> */}
+    //     <DropdownMenuItem
+    //       variant="destructive"
+    //       disabled={isLoading}
+    //       onSelect={() => mutateDeleteRoom()}
+    //     >
+    //       <TrashIcon className="size-4" />
+    //       Xóa
+    //     </DropdownMenuItem>
+    //   </DropdownMenuContent>
+    // </DropdownMenu>
   );
 }
 
@@ -96,8 +154,27 @@ function BulkDeleteButton({ roomIds }: { roomIds: number[] }) {
   }
 
   return (
-    <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
-      Xóa {roomIds.length} phòng
-    </Button>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="destructive" size="sm">
+          Xóa {roomIds.length} phòng
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent size="sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Xác nhận xóa hàng loạt</AlertDialogTitle>
+          <AlertDialogDescription>
+            Bạn có chắc muốn xóa {roomIds.length} phòng đã chọn? Hành động này
+            không thể hoàn tác.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Hủy</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={handleBulkDelete}>
+            Xóa
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

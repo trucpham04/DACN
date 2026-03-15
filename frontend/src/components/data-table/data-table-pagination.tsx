@@ -1,6 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { ChevronFirstIcon, ChevronLastIcon } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
@@ -51,21 +60,15 @@ export function DataTablePagination({
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm text-muted-foreground">
-        {total === 0
-          ? "Không có bản ghi nào"
-          : `Hiển thị ${startItem}–${endItem} trong ${total} bản ghi`}
-      </p>
-
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1.5 text-sm">
-          <span className="text-muted-foreground">Hiển thị</span>
+          <span className="text-muted-foreground">Số bản ghi mỗi trang</span>
           <select
             value={pageSize}
             onChange={(e) => onPaginationChange(1, Number(e.target.value))}
             className={cn(
-              "rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs",
-              "focus:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+              "border-input rounded-md border bg-transparent px-2 py-1 text-center text-sm shadow-xs",
+              "focus-visible:border-ring focus-visible:ring-ring/50 focus:outline-none focus-visible:ring-[3px]",
             )}
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
@@ -74,66 +77,105 @@ export function DataTablePagination({
               </option>
             ))}
           </select>
-          <span className="text-muted-foreground">/ trang</span>
+          {/* <span className="text-muted-foreground">/ trang</span> */}
         </div>
+        <p className="text-muted-foreground text-sm">
+          {total === 0
+            ? "Không có bản ghi nào"
+            : `${startItem}–${endItem} trong ${total} bản ghi`}
+        </p>
+      </div>
 
-        <div className="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPaginationChange(1, pageSize)}
-            disabled={page <= 1}
-          >
-            Đầu
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPaginationChange(page - 1, pageSize)}
-            disabled={page <= 1}
-          >
-            Trước
-          </Button>
-
-          {pageRange.map((item) =>
-            item.type === "ellipsis" ? (
-              <span
-                key={`ellipsis-${item.id}`}
-                className="px-1.5 text-sm text-muted-foreground"
+      <div className="flex flex-wrap items-center gap-3">
+        <Pagination className="justify-start sm:justify-end">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                aria-label="Go to first page"
+                size="icon"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPaginationChange(1, pageSize);
+                }}
+                className={cn(page <= 1 && "pointer-events-none opacity-50")}
+                aria-disabled={page <= 1}
+                tabIndex={page <= 1 ? -1 : undefined}
               >
-                …
-              </span>
-            ) : (
-              <Button
-                key={`page-${item.value}`}
-                variant={item.value === page ? "default" : "outline"}
-                size="sm"
-                onClick={() => onPaginationChange(item.value, pageSize)}
-                disabled={item.value === page}
-                aria-current={item.value === page ? "page" : undefined}
-              >
-                {item.value}
-              </Button>
-            ),
-          )}
+                <ChevronFirstIcon className="size-4" />
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPaginationChange(page - 1, pageSize);
+                }}
+                className={cn(page <= 1 && "pointer-events-none opacity-50")}
+                aria-disabled={page <= 1}
+                tabIndex={page <= 1 ? -1 : undefined}
+              />
+            </PaginationItem>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPaginationChange(page + 1, pageSize)}
-            disabled={page >= totalPages}
-          >
-            Sau
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPaginationChange(totalPages, pageSize)}
-            disabled={page >= totalPages}
-          >
-            Cuối
-          </Button>
-        </div>
+            {pageRange.map((item) =>
+              item.type === "ellipsis" ? (
+                <PaginationItem key={`ellipsis-${item.id}`}>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              ) : (
+                <PaginationItem key={`page-${item.value}`}>
+                  <PaginationLink
+                    href="#"
+                    isActive={item.value === page}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onPaginationChange(item.value, pageSize);
+                    }}
+                    className={cn(
+                      item.value === page && "pointer-events-none opacity-100",
+                    )}
+                  >
+                    {item.value}
+                  </PaginationLink>
+                </PaginationItem>
+              ),
+            )}
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPaginationChange(page + 1, pageSize);
+                }}
+                className={cn(
+                  page >= totalPages && "pointer-events-none opacity-50",
+                )}
+                aria-disabled={page >= totalPages}
+                tabIndex={page >= totalPages ? -1 : undefined}
+              />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                aria-label="Go to last page"
+                size="icon"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPaginationChange(totalPages, pageSize);
+                }}
+                className={cn(
+                  page >= totalPages && "pointer-events-none opacity-50",
+                )}
+                aria-disabled={page >= totalPages}
+                tabIndex={page >= totalPages ? -1 : undefined}
+              >
+                <ChevronLastIcon className="size-4" />
+              </PaginationLink>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );

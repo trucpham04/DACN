@@ -4,13 +4,19 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   type RowSelectionState,
   type SortingState,
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
+import {
+  ArrowDownIcon,
+  ArrowUpDownIcon,
+  ArrowUpIcon,
+  Target,
+} from "lucide-react";
 import * as React from "react";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -20,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import type { DataTableProps } from "./data-table.types";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -44,6 +51,7 @@ export function DataTable<TData>({
   renderRowActions,
   renderBulkActions,
   getRowId,
+  actionColumnWidth = 72,
   emptyMessage = "Không có dữ liệu.",
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>(sortingProp ?? []);
@@ -110,10 +118,17 @@ export function DataTable<TData>({
     if (renderRowActions) {
       cols.push({
         id: "__actions__",
-        header: () => null,
-        cell: ({ row }) => renderRowActions(row),
+        header: () => <ColHeader icon={Target} label="Hành động" center />,
+        cell: ({ row }) => (
+          <div className="flex items-center justify-center">
+            {renderRowActions(row)}
+          </div>
+        ),
         enableSorting: false,
         enableHiding: false,
+        // size: actionColumnWidth,
+        // minSize: actionColumnWidth,
+        // maxSize: actionColumnWidth,
       });
     }
 
@@ -129,7 +144,7 @@ export function DataTable<TData>({
     pageCount,
     state: { sorting, columnVisibility, rowSelection },
     manualPagination: true,
-    manualSorting: true,
+    manualSorting: false, // TODO: remove this when API is ready
     enableRowSelection,
     getRowId,
     onSortingChange: (updater) => {
@@ -140,12 +155,13 @@ export function DataTable<TData>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex h-full flex-col gap-4">
       <DataTableToolbar
         table={table}
         searchValue={searchValue}
@@ -160,7 +176,7 @@ export function DataTable<TData>({
         }
       />
 
-      <div className="rounded-md border">
+      <div className="max-h-[calc(100vh-20rem)] overflow-auto rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -168,6 +184,7 @@ export function DataTable<TData>({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
+                    className="bg-muted sticky top-0"
                     style={{
                       width:
                         header.getSize() !== 150 ? header.getSize() : undefined,
@@ -176,7 +193,7 @@ export function DataTable<TData>({
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <button
                         type="button"
-                        className="flex cursor-pointer select-none items-center gap-1 text-left"
+                        className="flex cursor-pointer items-center gap-1 text-left select-none"
                         onClick={header.column.getToggleSortingHandler()}
                         onKeyDown={header.column.getToggleSortingHandler()}
                       >
@@ -184,12 +201,14 @@ export function DataTable<TData>({
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
-                        <span className="text-xs text-muted-foreground">
-                          {header.column.getIsSorted() === "asc"
-                            ? "▲"
-                            : header.column.getIsSorted() === "desc"
-                              ? "▼"
-                              : "⇅"}
+                        <span className="text-muted-foreground text-xs">
+                          {header.column.getIsSorted() === "asc" ? (
+                            <ArrowUpIcon className="size-4" />
+                          ) : header.column.getIsSorted() === "desc" ? (
+                            <ArrowDownIcon className="size-4" />
+                          ) : (
+                            <ArrowUpDownIcon className="size-4" />
+                          )}
                         </span>
                       </button>
                     ) : (
@@ -204,7 +223,7 @@ export function DataTable<TData>({
             ))}
           </TableHeader>
 
-          <TableBody>
+          <TableBody className="">
             {isLoading ? (
               SKELETON_ROW_IDS.map((rowKey) => (
                 <TableRow key={rowKey}>
@@ -212,7 +231,10 @@ export function DataTable<TData>({
                     .getAllColumns()
                     .filter((col) => col.getIsVisible())
                     .map((col) => (
-                      <TableCell key={`${rowKey}-${col.id}`}>
+                      <TableCell
+                        key={`${rowKey}-${col.id}`}
+                        // className="border-r last:border-r-0"
+                      >
                         <Skeleton className="h-4 w-full" />
                       </TableCell>
                     ))}
@@ -222,7 +244,7 @@ export function DataTable<TData>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-destructive"
+                  className="text-destructive h-24 text-center"
                 >
                   {error}
                 </TableCell>
@@ -231,7 +253,7 @@ export function DataTable<TData>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
+                  className="text-muted-foreground h-24 text-center"
                 >
                   {emptyMessage}
                 </TableCell>
@@ -243,7 +265,16 @@ export function DataTable<TData>({
                   data-state={row.getIsSelected() ? "selected" : undefined}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      // className="border-r last:border-r-0"
+                      style={{
+                        width:
+                          cell.column.getSize() !== 150
+                            ? cell.column.getSize()
+                            : undefined,
+                      }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -264,5 +295,30 @@ export function DataTable<TData>({
         onPaginationChange={onPaginationChange}
       />
     </div>
+  );
+}
+
+export function ColHeader({
+  icon: Icon,
+  label,
+  center,
+  className,
+}: {
+  icon?: React.ComponentType<{ className?: string }>;
+  label: string;
+  center?: boolean;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "flex items-center gap-1.5",
+        center ? "justify-center" : "justify-start",
+        className,
+      )}
+    >
+      {Icon && <Icon className="text-muted-foreground size-3.5 shrink-0" />}
+      {label}
+    </span>
   );
 }

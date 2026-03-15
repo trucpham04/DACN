@@ -41,9 +41,14 @@ export interface DataTableProps<TData> {
   enableColumnVisibility?: boolean;
   /**
    * Render a cell with actions (edit / delete / view) for each row.
-   * Automatically appended as the last column.
+   * Automatically appended as the last column with a fixed width.
    */
   renderRowActions?: (row: Row<TData>) => ReactNode;
+  /**
+   * Fixed pixel width for the auto-generated action column.
+   * Defaults to 56px (enough for a single icon-size trigger button).
+   */
+  actionColumnWidth?: number;
   /**
    * Render bulk-action controls shown above the table when rows are selected.
    */
