@@ -76,6 +76,12 @@ export const navGroups: NavGroup[] = [
         roles: ["ADMIN", "STUDENT"],
       },
       {
+        href: "/my-students",
+        label: "Con của tôi",
+        icon: Users,
+        roles: ["PARENT"],
+      },
+      {
         href: "/schedules",
         label: "Lịch",
         icon: Calendar,
