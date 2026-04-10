@@ -139,7 +139,7 @@ export function AccountsTable() {
     setDetailAccount(row.original);
   }
 
-  async function handleCreateProfileSuccess(updatedAccount: Account) {
+  async function handleAccountUpdated(updatedAccount: Account) {
     setDetailAccount(updatedAccount);
     await refreshAccounts();
   }
@@ -207,7 +207,7 @@ export function AccountsTable() {
       <AccountDetailSheet
         account={detailAccount}
         onClose={() => setDetailAccount(null)}
-        onCreateProfileSuccess={handleCreateProfileSuccess}
+        onAccountUpdated={handleAccountUpdated}
       />
     </>
   );
