@@ -172,8 +172,8 @@ Base path: `/api/registrations`
 
 Base path: `/api/parents/students/:studentId`
 
-- [ ] `GET /api/parents/students/:studentId/schedule` — parent views linked student's schedule. **Role: PARENT**
-- [ ] `GET /api/parents/students/:studentId/attendance` — parent views linked student's attendance. **Role: PARENT**
+- [x] `GET /api/parents/students/:studentId/schedule` — parent views linked student's schedule. **Role: PARENT**
+- [x] `GET /api/parents/students/:studentId/attendance` — parent views linked student's attendance. **Role: PARENT**
 
 ---
 
@@ -296,7 +296,7 @@ Base path: `/api/certificates`
 Base path: `/api/parents`
 
 - [ ] `GET /api/parents/:parentId/students` — admin views students linked to a parent. **Role: ADMIN**
-- [ ] `GET /api/parents/my-students` — parent views own linked students. **Role: PARENT**
+- [x] `GET /api/parents/my-students` — parent views own linked students. **Role: PARENT**
 
 ---
 
@@ -338,4 +338,5 @@ src/
 
 ### Route ordering rule
 Static routes (e.g. `/me`, `/my-sections`, `/available`) **must be registered before** dynamic routes (e.g. `/:id`) to avoid Express matching them as IDs.
+
 

@@ -9312,6 +9312,546 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Get My Students (Parent)",
+          "item": [
+            {
+              "name": "Get My Students - Success (PARENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/my-students?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "my-students"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Students - Missing Token",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/my-students?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "my-students"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Students - Forbidden (STUDENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/my-students?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "my-students"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Students - Invalid Query",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/my-students?page=abc&limit=-1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "my-students"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "abc"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "-1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Get Student Schedule (Parent)",
+          "item": [
+            {
+              "name": "Get Student Schedule - Success (PARENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{linked_student_profile_id}}/schedule?dayOfWeek=MONDAY",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{linked_student_profile_id}}",
+                    "schedule"
+                  ],
+                  "query": [
+                    {
+                      "key": "dayOfWeek",
+                      "value": "MONDAY"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Schedule - Missing Token",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{linked_student_profile_id}}/schedule?dayOfWeek=MONDAY",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{linked_student_profile_id}}",
+                    "schedule"
+                  ],
+                  "query": [
+                    {
+                      "key": "dayOfWeek",
+                      "value": "MONDAY"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Schedule - Forbidden (STUDENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{linked_student_profile_id}}/schedule?dayOfWeek=MONDAY",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{linked_student_profile_id}}",
+                    "schedule"
+                  ],
+                  "query": [
+                    {
+                      "key": "dayOfWeek",
+                      "value": "MONDAY"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Schedule - Invalid studentId",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/abc/schedule?dayOfWeek=MONDAY",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "abc",
+                    "schedule"
+                  ],
+                  "query": [
+                    {
+                      "key": "dayOfWeek",
+                      "value": "MONDAY"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Schedule - Invalid Query",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{linked_student_profile_id}}/schedule?dayOfWeek=BADDAY",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{linked_student_profile_id}}",
+                    "schedule"
+                  ],
+                  "query": [
+                    {
+                      "key": "dayOfWeek",
+                      "value": "BADDAY"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Schedule - Student Not Linked",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{unlinked_student_profile_id}}/schedule?dayOfWeek=MONDAY",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{unlinked_student_profile_id}}",
+                    "schedule"
+                  ],
+                  "query": [
+                    {
+                      "key": "dayOfWeek",
+                      "value": "MONDAY"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Get Student Attendance (Parent)",
+          "item": [
+            {
+              "name": "Get Student Attendance - Success (PARENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{linked_student_profile_id}}/attendance?startDate=2025-01-01&endDate=2025-12-31",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{linked_student_profile_id}}",
+                    "attendance"
+                  ],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2025-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2025-12-31"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Attendance - Missing Token",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{linked_student_profile_id}}/attendance?startDate=2025-01-01&endDate=2025-12-31",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{linked_student_profile_id}}",
+                    "attendance"
+                  ],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2025-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2025-12-31"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Attendance - Forbidden (STUDENT)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{linked_student_profile_id}}/attendance?startDate=2025-01-01&endDate=2025-12-31",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{linked_student_profile_id}}",
+                    "attendance"
+                  ],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2025-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2025-12-31"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Attendance - Invalid studentId",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/abc/attendance?startDate=2025-01-01&endDate=2025-12-31",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "abc",
+                    "attendance"
+                  ],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2025-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2025-12-31"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Attendance - Invalid Query",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{linked_student_profile_id}}/attendance?startDate=2025-13-01",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{linked_student_profile_id}}",
+                    "attendance"
+                  ],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2025-13-01"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Attendance - Student Not Linked",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/parents/students/{{unlinked_student_profile_id}}/attendance?startDate=2025-01-01&endDate=2025-12-31",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "parents",
+                    "students",
+                    "{{unlinked_student_profile_id}}",
+                    "attendance"
+                  ],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2025-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2025-12-31"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
