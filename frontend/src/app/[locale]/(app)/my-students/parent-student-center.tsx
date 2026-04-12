@@ -27,6 +27,9 @@ function LoadingBlock() {
 export function ParentStudentCenter() {
   const role = useAuthStore((s) => s.currentUser?.role ?? null);
 
+  const [sectionId, setSectionId] = React.useState<string>("");
+  const [roomId, setRoomId] = React.useState<string>("");
+  const [subjectId, setSubjectId] = React.useState<string>("");
   const [dayOfWeek, setDayOfWeek] = React.useState<string>("");
   const [startDate, setStartDate] = React.useState<string>("");
   const [endDate, setEndDate] = React.useState<string>("");
@@ -60,6 +63,8 @@ export function ParentStudentCenter() {
     isLoading: schedulesLoading,
     error: schedulesError,
   } = useParentStudentSchedule(selectedStudentId, {
+    ...(sectionId ? { sectionId: Number(sectionId) } : {}),
+    ...(roomId ? { roomId: Number(roomId) } : {}),
     ...(dayOfWeek ? { dayOfWeek } : {}),
     ...(startDate ? { startDate } : {}),
     ...(endDate ? { endDate } : {}),
@@ -70,6 +75,8 @@ export function ParentStudentCenter() {
     isLoading: attendanceLoading,
     error: attendanceError,
   } = useParentStudentAttendance(selectedStudentId, {
+    ...(sectionId ? { sectionId: Number(sectionId) } : {}),
+    ...(subjectId ? { subjectId: Number(subjectId) } : {}),
     ...(startDate ? { startDate } : {}),
     ...(endDate ? { endDate } : {}),
   });
@@ -130,6 +137,42 @@ export function ParentStudentCenter() {
                 <option value="">Không có học sinh liên kết</option>
               )}
             </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Mã học phần</label>
+            <input
+              type="number"
+              min={1}
+              placeholder="Ví dụ: 12"
+              className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+              value={sectionId}
+              onChange={(e) => setSectionId(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Mã phòng</label>
+            <input
+              type="number"
+              min={1}
+              placeholder="Ví dụ: 101"
+              className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Mã môn</label>
+            <input
+              type="number"
+              min={1}
+              placeholder="Ví dụ: 5"
+              className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+              value={subjectId}
+              onChange={(e) => setSubjectId(e.target.value)}
+            />
           </div>
 
           <div className="space-y-1">
@@ -217,7 +260,7 @@ export function ParentStudentCenter() {
                         {row.startPeriod} - {row.endPeriod}
                       </td>
                       <td className="px-2 py-2">
-                        {row.startDate} đến {row.endDate}
+                        {row.startDate ?? "-"} đến {row.endDate ?? "-"}
                       </td>
                     </tr>
                   ))}
@@ -266,14 +309,19 @@ export function ParentStudentCenter() {
                             key={session.attendanceId}
                             className="border-b last:border-0"
                           >
-                            <td className="px-2 py-2">{session.date}</td>
+                            <td className="px-2 py-2">{session.date ?? "-"}</td>
                             <td className="px-2 py-2">{session.dayOfWeek}</td>
                             <td className="px-2 py-2">{session.slot}</td>
-                            <td className="px-2 py-2">{session.roomName}</td>
                             <td className="px-2 py-2">
-                              {session.startPeriod} - {session.endPeriod}
+                              {session.roomName ?? "-"}
                             </td>
-                            <td className="px-2 py-2">{session.status}</td>
+                            <td className="px-2 py-2">
+                              {session.startPeriod ?? "-"} -{" "}
+                              {session.endPeriod ?? "-"}
+                            </td>
+                            <td className="px-2 py-2">
+                              {session.status ?? "-"}
+                            </td>
                             <td className="px-2 py-2">{session.note || "-"}</td>
                           </tr>
                         ))}

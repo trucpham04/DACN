@@ -1,8 +1,11 @@
 export interface ParentStudent {
   profileId: number;
   fullName: string | null;
+  phoneNumber: string | null;
+  email: string | null;
   dateOfBirth: string | null;
   gender: string | null;
+  avatar: string | null;
 }
 
 export interface ParentStudentSchedule {
@@ -17,21 +20,21 @@ export interface ParentStudentSchedule {
   startPeriod: number;
   endPeriod: number;
   totalPeriods: number;
-  startDate: string;
-  endDate: string;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 export interface ParentAttendanceSession {
   attendanceId: number;
-  date: string;
+  date: string | null;
   dayOfWeek: string;
   slot: number;
-  roomId: number;
-  roomName: string;
-  startPeriod: number;
-  endPeriod: number;
-  status: string;
-  note: string;
+  roomId: number | null;
+  roomName: string | null;
+  startPeriod: number | null;
+  endPeriod: number | null;
+  status: string | null;
+  note: string | null;
 }
 
 export interface ParentStudentAttendanceBySubject {
