@@ -19,8 +19,11 @@ import type {
 interface ParentStudentRaw {
   profileID: number;
   fullName: string | null;
+  phoneNumber: string | null;
+  email: string | null;
   dateOfBirth: string | null;
   gender: string | null;
+  avatar: string | null;
 }
 
 interface StudentParentRaw {
@@ -71,8 +74,11 @@ export async function getParentMyStudents(
     items: res.items.map((item) => ({
       profileId: item.profileID,
       fullName: item.fullName,
+      phoneNumber: item.phoneNumber,
+      email: item.email,
       dateOfBirth: item.dateOfBirth,
       gender: item.gender,
+      avatar: item.avatar,
     })),
     meta: res.meta,
   };
