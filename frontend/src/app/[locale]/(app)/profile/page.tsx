@@ -2,24 +2,24 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import type { MutationResult } from "@/types/api";
-import type { Profile } from "@/types/profile";
+import { toast } from "@/components/ui/sonner";
 import {
   useCreateProfile,
   useMyProfile,
   useUpdateMyProfile,
 } from "@/hooks/use-profiles";
-import { toast } from "@/components/ui/sonner";
 import { useAuthStore } from "@/stores/auth-store";
-import {
-  ProfileFormDialog,
-  type ProfileFormValues,
-  buildUpdateProfilePayload,
-} from "./profile-form-dialog";
+import type { MutationResult } from "@/types/api";
+import type { Profile } from "@/types/profile";
 import {
   PROFILE_GENDER_OPTIONS,
   PROFILE_STATUS_OPTIONS,
 } from "./profile.constants";
+import {
+  buildUpdateProfilePayload,
+  ProfileFormDialog,
+  type ProfileFormValues,
+} from "./profile-form-dialog";
 
 function getGenderLabel(gender: string | null): string {
   const option = PROFILE_GENDER_OPTIONS.find((opt) => opt.value === gender);

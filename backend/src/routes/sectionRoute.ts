@@ -1,4 +1,7 @@
 import { Router } from "express";
+import { getAttendancesBySectionHandler } from "../controllers/attendanceController";
+import { getRegistrationsBySectionHandler } from "../controllers/registrationController";
+import { getSchedulesBySectionHandler } from "../controllers/scheduleController";
 import {
   createSectionHandler,
   deleteSectionHandler,
@@ -10,15 +13,17 @@ import {
   updateSectionStatusHandler,
   updateSectionVisibilityHandler,
 } from "../controllers/sectionController";
-import { getAttendancesBySectionHandler } from "../controllers/attendanceController";
-import { getRegistrationsBySectionHandler } from "../controllers/registrationController";
-import { getSchedulesBySectionHandler } from "../controllers/scheduleController";
 import { requireAuth, requireRole } from "../middleware/auth";
 
 const router = Router();
 
 // GET /api/sections - List sections (ADMIN only)
-router.get("/", requireAuth, requireRole("ADMIN"), getSectionsHandler);
+router.get(
+  "/",
+  requireAuth,
+  requireRole("ADMIN", "STUDENT"),
+  getSectionsHandler,
+);
 
 // POST /api/sections - Create section (ADMIN only)
 router.post("/", requireAuth, requireRole("ADMIN"), createSectionHandler);
@@ -78,7 +83,12 @@ router.get(
 router.get("/:sectionId", requireAuth, getSectionDetailHandler);
 
 // PUT /api/sections/:sectionId - Update section (ADMIN only)
-router.put("/:sectionId", requireAuth, requireRole("ADMIN"), updateSectionHandler);
+router.put(
+  "/:sectionId",
+  requireAuth,
+  requireRole("ADMIN"),
+  updateSectionHandler,
+);
 
 // DELETE /api/sections/:sectionId - Delete section (ADMIN only)
 router.delete(
