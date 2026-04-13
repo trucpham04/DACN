@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import type { ToolbarActionGroup } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
 import {
-  useCertificateTypeListMock,
+  useCertificateTypeList,
   useCreateCertificateType,
   useUpdateCertificateType,
 } from "@/hooks/use-certificate-types";
@@ -33,7 +33,7 @@ export function CertificateTypesTable() {
     isLoading,
     error,
     mutate: refreshList,
-  } = useCertificateTypeListMock({
+  } = useCertificateTypeList({
     page,
     limit: pageSize,
     search: search.trim() || undefined,

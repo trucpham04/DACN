@@ -38,9 +38,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCertificateTypeListMock } from "@/hooks/use-certificate-types";
+import { useCertificateTypeList } from "@/hooks/use-certificate-types";
 import {
-  useCertificatesByApplicationMock,
+  useCertificatesByApplication,
   useCreateCertificate,
   useDeleteCertificate,
 } from "@/hooks/use-certificates";
@@ -144,7 +144,7 @@ function ApplicationDetailCertificates({
   applicationId: number;
 }) {
   const { data, isLoading, error } =
-    useCertificatesByApplicationMock(applicationId);
+    useCertificatesByApplication(applicationId);
   const rows = error ? [] : (data ?? []);
   const showLoading = isLoading && !error;
 
@@ -229,9 +229,13 @@ export function ProfileApplicationsForm() {
   const pendingApp =
     items.find((a) => a.applicationStatus === "PENDING") ?? null;
 
-  const { data: typesData } = useCertificateTypeListMock({
+  const {
+    data: typesData,
+    isLoading: typesLoading,
+    error: typesError,
+  } = useCertificateTypeList({
     page: 1,
-    limit: 200,
+    limit: 100,
   });
   const typeOptions = typesData?.items ?? [];
 
@@ -239,7 +243,7 @@ export function ProfileApplicationsForm() {
     data: certificates,
     isLoading: certsLoading,
     mutate: refreshCertificates,
-  } = useCertificatesByApplicationMock(pendingApp?.applicationId);
+  } = useCertificatesByApplication(pendingApp?.applicationId);
 
   const { mutateWithResult: submitApp, isLoading: submitting } =
     useSubmitApplication();
@@ -552,10 +556,16 @@ export function ProfileApplicationsForm() {
                           className="border-input bg-background h-9 w-full rounded-md border px-2 text-sm"
                           value={formTypeId}
                           onChange={(e) => setFormTypeId(e.target.value)}
-                          disabled={creatingCert}
+                          disabled={creatingCert || typesLoading || !!typesError}
                           required
                         >
-                          <option value="">— Chọn —</option>
+                          <option value="">
+                            {typesLoading
+                              ? "Đang tải loại chứng chỉ…"
+                              : typesError
+                                ? "Không tải được loại chứng chỉ"
+                                : "— Chọn —"}
+                          </option>
                           {typeOptions.map((t) => (
                             <option
                               key={t.certificateTypeId}

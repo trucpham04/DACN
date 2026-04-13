@@ -21,7 +21,12 @@ router.get(
 );
 
 // POST /api/registrations - Register section (STUDENT only)
-router.post("/", requireAuth, requireRole("STUDENT"), createRegistrationHandler);
+router.post(
+  "/",
+  requireAuth,
+  requireRole("STUDENT"),
+  createRegistrationHandler,
+);
 
 // DELETE /api/registrations/:sectionId - Cancel registration (STUDENT only)
 router.delete(

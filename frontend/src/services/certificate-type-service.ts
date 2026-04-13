@@ -8,6 +8,22 @@ import type {
   UpdateCertificateTypeInput,
 } from "@/types/certificate";
 
+type BackendCertificateTypeMutationInput = {
+  TypeName?: string;
+  Description?: string;
+};
+
+function toBackendCertificateTypeMutationInput(
+  input: CreateCertificateTypeInput | UpdateCertificateTypeInput,
+): BackendCertificateTypeMutationInput {
+  return {
+    ...(input.typeName !== undefined ? { TypeName: input.typeName } : {}),
+    ...(input.description !== undefined
+      ? { Description: input.description }
+      : {}),
+  };
+}
+
 export function getCertificateTypeListUrl(params: GetCertificateTypeListParams = {}): string {
   return `/certificate-types${buildQuery(params)}`;
 }
@@ -26,7 +42,10 @@ export async function getCertificateTypeDetail(typeId: number): Promise<Certific
 export async function createCertificateType(
   input: CreateCertificateTypeInput,
 ): Promise<CertificateType> {
-  const res = await apiClient.post<CertificateType>("/certificate-types", input);
+  const res = await apiClient.post<CertificateType>(
+    "/certificate-types",
+    toBackendCertificateTypeMutationInput(input),
+  );
   return res.data as CertificateType;
 }
 
@@ -34,7 +53,10 @@ export async function updateCertificateType(
   typeId: number,
   input: UpdateCertificateTypeInput,
 ): Promise<CertificateType> {
-  const res = await apiClient.put<CertificateType>(`/certificate-types/${typeId}`, input);
+  const res = await apiClient.put<CertificateType>(
+    `/certificate-types/${typeId}`,
+    toBackendCertificateTypeMutationInput(input),
+  );
   return res.data as CertificateType;
 }
 

@@ -75,8 +75,8 @@ export async function createCertificateHandler(
       message: "Dữ liệu tạo chứng chỉ không hợp lệ",
     });
 
-    // Note: adminAccountId typically from req.user after auth middleware
-    const adminAccountId = (req as any).user?.AccountID || 0;
+    // auth middleware sets req.user.accountId (camelCase)
+    const adminAccountId = req.user?.accountId ?? 0;
     const result = await createCertificate(validated, adminAccountId);
     sendSuccess(res, result, 201);
   } catch (error) {
